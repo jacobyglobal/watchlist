@@ -12,9 +12,9 @@ import pandas as pd
 def ohlc4(df: pd.DataFrame) -> pd.Series:
     """Per-bar price proxy: (Open + High + Low + Close) / 4.
 
-    This is the VWAP proxy used throughout the watchlist (the OHLC / 4 column);
-    daily data has no per-day VWAP reset, so OHLC / 4 is the standard daily
-    substitute for intraday VWAP.
+    This is the VWAP proxy used throughout the watchlist (the Typical Price (TP)
+    column); daily data has no per-day VWAP reset, so OHLC / 4 is the standard
+    daily substitute for intraday VWAP.
     """
     return (df["Open"] + df["High"] + df["Low"] + df["Close"]) / 4.0
 
@@ -43,8 +43,8 @@ def true_range(high: pd.Series, price: pd.Series, low: pd.Series) -> pd.Series:
     """ThinkScript TrueRange(high, price, low).
 
     TrueRange(H, P, L) = Max(H - L, |H - P|, |P - L|).
-    Here `price` is the VWAP proxy (OHLC / 4), matching the Average True Range
-    (ATR) input used in ATR as % Price.
+    Here `price` is the VWAP proxy (Typical Price (TP)), matching the Average
+    True Range (ATR) input used in Normalized ATR (NATR).
     """
     return pd.concat(
         [high - low, (high - price).abs(), (price - low).abs()], axis=1
