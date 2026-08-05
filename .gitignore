@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Regenerated data (run `python main.py` to rebuild)
+output/
+
+# OS / editor
+.DS_Store
+*.swp
+
+# Local config
+.env
+*.env
+
+# Local-only design doc (kept on machine, not uploaded)
+plan.md
+
+# Source ThinkScript files (local reference only)
+scripts/
+
+# opencode / agent caches (defensive)
+.opencode/
