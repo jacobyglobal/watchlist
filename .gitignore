@@ -20,6 +20,9 @@ output/
 # Local-only design doc (kept on machine, not uploaded)
 plan.md
 
+# Local-only handoff notes for the website team
+STATUS.md
+
 # Source ThinkScript files (local reference only)
 scripts/
 
