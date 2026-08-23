@@ -10,15 +10,21 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import pandas as pd
+import yaml
 import yfinance as yf
 
-TICKERS = [
-    "MU", "MSFT", "NVDA", "AMZN", "AAPL", "SNDK", "PLTR", "AMD",
-    "GOOGL", "META", "SPCX", "TSLA", "INTC", "AVGO", "ORCL", "MRVL",
-    "NBIS", "LITE", "STX", "WDC", "BE", "CAT", "LLY", "WMT", "JPM",
-    "QQQ",
-]
-BENCHMARK = "QQQ"
+ROOT = Path(__file__).resolve().parent
+CONFIG_PATH = ROOT / "config" / "watchlist.yaml"
+
+
+def _load_config() -> dict:
+    with CONFIG_PATH.open() as f:
+        return yaml.safe_load(f)
+
+
+_config = _load_config()
+BENCHMARK = _config["benchmark"]
+TICKERS = [t["symbol"] for t in _config["tickers"] if t.get("enabled", True)]
 
 PERIOD = "18mo"
 INTERVAL = "1d"

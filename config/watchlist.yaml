@@ -1,0 +1,81 @@
+benchmark: "QQQ"
+
+tickers:
+  - symbol: "MU"
+    sector: "Semiconductors"
+    enabled: true
+  - symbol: "MSFT"
+    sector: "Software"
+    enabled: true
+  - symbol: "NVDA"
+    sector: "Semiconductors"
+    enabled: true
+  - symbol: "AMZN"
+    sector: "E-commerce/Cloud"
+    enabled: true
+  - symbol: "AAPL"
+    sector: "Consumer Electronics"
+    enabled: true
+  - symbol: "SNDK"
+    sector: "Semiconductors"
+    enabled: true
+  - symbol: "PLTR"
+    sector: "Software"
+    enabled: true
+  - symbol: "AMD"
+    sector: "Semiconductors"
+    enabled: true
+  - symbol: "GOOGL"
+    sector: "Internet/Cloud"
+    enabled: true
+  - symbol: "META"
+    sector: "Social Media/AI"
+    enabled: true
+  - symbol: "SPCX"
+    sector: "ETF"
+    enabled: true
+  - symbol: "TSLA"
+    sector: "Auto/Energy"
+    enabled: true
+  - symbol: "INTC"
+    sector: "Semiconductors"
+    enabled: true
+  - symbol: "AVGO"
+    sector: "Semiconductors"
+    enabled: true
+  - symbol: "ORCL"
+    sector: "Software/Cloud"
+    enabled: true
+  - symbol: "MRVL"
+    sector: "Semiconductors"
+    enabled: true
+  - symbol: "NBIS"
+    sector: "Biotech"
+    enabled: true
+  - symbol: "LITE"
+    sector: "Semiconductors"
+    enabled: true
+  - symbol: "STX"
+    sector: "Storage"
+    enabled: true
+  - symbol: "WDC"
+    sector: "Storage"
+    enabled: true
+  - symbol: "BE"
+    sector: "Energy"
+    enabled: true
+  - symbol: "CAT"
+    sector: "Industrial"
+    enabled: true
+  - symbol: "LLY"
+    sector: "Pharma"
+    enabled: true
+  - symbol: "WMT"
+    sector: "Retail"
+    enabled: true
+  - symbol: "JPM"
+    sector: "Financials"
+    enabled: true
+  - symbol: "QQQ"
+    sector: "ETF"
+    enabled: true
