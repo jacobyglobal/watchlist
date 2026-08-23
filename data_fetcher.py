@@ -25,6 +25,12 @@ def _load_config() -> dict:
 _config = _load_config()
 BENCHMARK = _config["benchmark"]
 TICKERS = [t["symbol"] for t in _config["tickers"] if t.get("enabled", True)]
+# Symbol -> "Stock" | "ETF"; entries without a `type` field default to Stock.
+TICKER_TYPES = {
+    t["symbol"]: t.get("type", "Stock")
+    for t in _config["tickers"]
+    if t.get("enabled", True)
+}
 
 PERIOD = "18mo"
 INTERVAL = "1d"

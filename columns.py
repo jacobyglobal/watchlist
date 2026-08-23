@@ -18,7 +18,7 @@ from indicators import (
     vwap_dollar_vol,
 )
 
-_BASE_COLS = ["Ticker", "Date", "Open", "High", "Low", "Close", "Volume (Vol)"]
+_BASE_COLS = ["Ticker", "Type", "Date", "Open", "High", "Low", "Close", "Volume (Vol)"]
 
 _COMPUTED_ORDER = [
     "Typical Price (TP)",
@@ -38,6 +38,13 @@ _COMPUTED_ORDER = [
 # the CSV. `kind` is one of base / intermediate / computed (per plan.md).
 _BASE_GUIDE = [
     {"name": "Ticker", "kind": "base", "formula": "", "meaning": "Symbol from the watchlist.", "recompute": ""},
+    {
+        "name": "Type",
+        "kind": "base",
+        "formula": "",
+        "meaning": 'Security classification from config/watchlist.yaml: "ETF" or "Stock" (entries without an explicit type default to Stock).',
+        "recompute": "",
+    },
     {"name": "Date", "kind": "base", "formula": "", "meaning": "Trading date of the latest bar used for the row.", "recompute": ""},
     {"name": "Open", "kind": "base", "formula": "", "meaning": "Raw daily open from yfinance.", "recompute": ""},
     {"name": "High", "kind": "base", "formula": "", "meaning": "Raw daily high from yfinance.", "recompute": ""},
@@ -194,9 +201,13 @@ def write_column_guide(path: str | Path) -> Path:
 
 
 def build_watchlist(
-    tickers: list[str], benchmark: str, refresh: bool = False
+    tickers: list[str],
+    benchmark: str,
+    refresh: bool = False,
+    ticker_types: dict[str, str] | None = None,
 ) -> pd.DataFrame:
     """One row per ticker with the latest bar's base + computed values."""
+    ticker_types = ticker_types or {}
     symbols = list(dict.fromkeys(tickers + [benchmark]))
     data = download(symbols, refresh=refresh)
 
@@ -207,7 +218,11 @@ def build_watchlist(
     rows: list[dict] = []
     for ticker in tickers:
         df = data.get(ticker)
-        row: dict = {"Ticker": ticker, "Date": None}
+        row: dict = {
+            "Ticker": ticker,
+            "Type": ticker_types.get(ticker, "Stock"),
+            "Date": None,
+        }
         if df is None or df.empty:
             rows.append(row)
             continue

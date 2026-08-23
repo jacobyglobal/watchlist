@@ -33,6 +33,7 @@ tickers:
     enabled: true
   - symbol: "SPCX"
     sector: "ETF"
+    type: "ETF"
     enabled: true
   - symbol: "TSLA"
     sector: "Auto/Energy"
@@ -78,4 +79,87 @@ tickers:
     enabled: true
   - symbol: "QQQ"
     sector: "ETF"
+    type: "ETF"
+    enabled: true
+
+  # ETFs mirrored from MarketHighs/etfs.yaml
+  - symbol: "SPY"
+    sector: "S&P 500"
+    type: "ETF"
+    enabled: true
+  - symbol: "IWM"
+    sector: "Russell 2000"
+    type: "ETF"
+    enabled: true
+  - symbol: "DIA"
+    sector: "DJ Industrial Average"
+    type: "ETF"
+    enabled: true
+  - symbol: "XLB"
+    sector: "Basic Materials"
+    type: "ETF"
+    enabled: true
+  - symbol: "XLC"
+    sector: "Communication Services"
+    type: "ETF"
+    enabled: true
+  - symbol: "XLY"
+    sector: "Consumer Cyclical"
+    type: "ETF"
+    enabled: true
+  - symbol: "XLP"
+    sector: "Consumer Defensive"
+    type: "ETF"
+    enabled: true
+  - symbol: "XLE"
+    sector: "Energy"
+    type: "ETF"
+    enabled: true
+  - symbol: "XLF"
+    sector: "Financials"
+    type: "ETF"
+    enabled: true
+  - symbol: "XLV"
+    sector: "Health Care"
+    type: "ETF"
+    enabled: true
+  - symbol: "XLI"
+    sector: "Industrials"
+    type: "ETF"
+    enabled: true
+  - symbol: "XLRE"
+    sector: "Real Estate"
+    type: "ETF"
+    enabled: true
+  - symbol: "SMH"
+    sector: "Semiconductors"
+    type: "ETF"
+    enabled: true
+  - symbol: "IGV"
+    sector: "Software"
+    type: "ETF"
+    enabled: true
+  - symbol: "XLK"
+    sector: "Technology"
+    type: "ETF"
+    enabled: true
+  - symbol: "XLU"
+    sector: "Utilities"
+    type: "ETF"
+    enabled: true
+  - symbol: "XBI"
+    sector: "Biotech"
+    type: "ETF"
+    enabled: true
+  - symbol: "GLD"
+    sector: "Gold"
+    type: "ETF"
+    enabled: true
+  - symbol: "TLT"
+    sector: "Long-Term Treasuries"
+    type: "ETF"
+    enabled: true
+  - symbol: "IBIT"
+    sector: "Bitcoin"
+    type: "ETF"
     enabled: true

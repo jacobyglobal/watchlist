@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 
 from columns import build_watchlist, write_column_guide
-from data_fetcher import BENCHMARK, TICKERS
+from data_fetcher import BENCHMARK, TICKERS, TICKER_TYPES
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_OUT = ROOT / "output" / "watchlist.csv"
@@ -29,7 +29,9 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    watch = build_watchlist(TICKERS, BENCHMARK, refresh=args.refresh)
+    watch = build_watchlist(
+        TICKERS, BENCHMARK, refresh=args.refresh, ticker_types=TICKER_TYPES
+    )
 
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
