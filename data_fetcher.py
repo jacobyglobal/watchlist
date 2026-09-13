@@ -1,90 +1,47 @@
-"""Download and cache daily OHLCV data from yfinance.
+"""Thin client over the shared ``marketdata`` package.
 
-Raw (unadjusted) daily bars are used to match ThinkOrSwim price series.
-Each ticker's history is cached to output/raw/{ticker}.csv and reused on
-subsequent runs unless `refresh=True`.
+The heavy lifting lives in ``marketdata/config.py`` (canonical universe from
+config/watchlist.yaml) and ``marketdata/store.py`` (10-year OHLCV parquet
+cache, TTL-wholesale). This module keeps the historic WatchList interface so
+downstream code (columns.py, main.py) is unchanged:
+
+- ``BENCHMARK`` / ``TICKERS`` / ``TICKER_TYPES`` from the canonical universe.
+- ``download(tickers)`` -> {ticker: DataFrame} over the 18-month indicator
+  window, sliced from the 10-year store.
 """
+
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
-
 import pandas as pd
-import yaml
-import yfinance as yf
 
-ROOT = Path(__file__).resolve().parent
-CONFIG_PATH = ROOT / "config" / "watchlist.yaml"
+from marketdata import config as md_config
+from marketdata import store as md_store
 
+_universe = md_config.load_universe()
 
-def _load_config() -> dict:
-    with CONFIG_PATH.open() as f:
-        return yaml.safe_load(f)
+BENCHMARK = _universe.benchmark
+TICKERS = _universe.watchlist_tickers
+TICKER_TYPES = _universe.type_map
 
-
-_config = _load_config()
-BENCHMARK = _config["benchmark"]
-TICKERS = [t["symbol"] for t in _config["tickers"] if t.get("enabled", True)]
-# Symbol -> "Stock" | "ETF"; entries without a `type` field default to Stock.
-TICKER_TYPES = {
-    t["symbol"]: t.get("type", "Stock")
-    for t in _config["tickers"]
-    if t.get("enabled", True)
-}
-
-PERIOD = "18mo"
-INTERVAL = "1d"
-_OHLCV_COLS = ["Open", "High", "Low", "Close", "Volume"]
-
-ROOT = Path(__file__).resolve().parent
-RAW_DIR = ROOT / "output" / "raw"
+WATCHLIST_MONTHS = md_store.WATCHLIST_MONTHS
 
 
-def _normalize_index(df: pd.DataFrame) -> pd.DataFrame:
-    """Convert the index to naive daily dates (drop tz / time-of-day).
-
-    yfinance returns tz-aware timestamps that round-trip through CSV with
-    mixed UTC offsets (DST), which pandas 3.x refuses to parse. Normalizing
-    to naive dates avoids the issue and makes cross-ticker reindexing exact.
-    """
-    idx = pd.to_datetime(df.index, utc=True).tz_localize(None)
-    return df.set_axis(pd.DatetimeIndex(idx.date), axis=0)
-
-
-def _fetch_one(ticker: str, refresh: bool = False) -> tuple[str, pd.DataFrame | None]:
-    cache_path = RAW_DIR / f"{ticker}.csv"
-    if not refresh and cache_path.exists():
-        try:
-            cached = _normalize_index(
-                pd.read_csv(cache_path, index_col=0, parse_dates=True)
-            )
-            if not cached.empty:
-                return ticker, cached
-        except Exception:
-            pass
-
-    hist = yf.Ticker(ticker).history(
-        period=PERIOD, interval=INTERVAL, auto_adjust=False
-    )
-    if hist is None or hist.empty:
-        return ticker, None
-
-    df = _normalize_index(hist[_OHLCV_COLS].dropna())
-    if df.empty:
-        return ticker, None
-
-    RAW_DIR.mkdir(parents=True, exist_ok=True)
-    df.to_csv(cache_path)
-    return ticker, df
+def _slice_18mo(df: pd.DataFrame) -> pd.DataFrame:
+    """Keep the trailing ~18 months (the WatchList indicator window)."""
+    cutoff = pd.Timestamp.today().normalize() - pd.DateOffset(months=WATCHLIST_MONTHS)
+    return df[df.index >= cutoff]
 
 
 def download(tickers: list[str], refresh: bool = False) -> dict[str, pd.DataFrame | None]:
-    """Fetch histories for all tickers in parallel, returning {ticker: df|None}."""
-    RAW_DIR.mkdir(parents=True, exist_ok=True)
+    """Fetch the 18-month OHLCV window for `tickers` from the shared store.
+
+    ``refresh=True`` forces a fresh download (TTL reuse disabled); on download
+    failure the store falls back to its cached parquets.
+    """
+    max_age = 0.0 if refresh else md_store.DEFAULT_CACHE_MAX_AGE_DAYS
+    frames = md_store.load_ohlcv(list(tickers), cache_max_age_days=max_age)
     data: dict[str, pd.DataFrame | None] = {}
-    with ThreadPoolExecutor(max_workers=8) as pool:
-        for ticker, df in pool.map(
-            lambda t: _fetch_one(t, refresh), tickers
-        ):
-            data[ticker] = df
+    for ticker, df in frames.items():
+        window = _slice_18mo(df)
+        data[ticker] = window if not window.empty else None
     return data
